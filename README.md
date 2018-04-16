@@ -34,6 +34,11 @@ Prepare the huge file with random words, then run:
 Then you will see the output file with pair of five log passphrase and word
 
 
+## Building
+
+Boost library is needed
+
+
 ## How to generate the dicionary with numbers?
 
 ```

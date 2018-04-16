@@ -31,7 +31,7 @@ Prepare the huge file with random words, then run:
 ./pass-dict --words=words.txt --characters=5
 ```
 
-Then you will see the output file with pair of five log passphrase and word
+Then you will see the output file with pair of five long passphrase and word
 
 
 ## Building

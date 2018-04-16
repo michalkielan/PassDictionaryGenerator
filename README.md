@@ -23,7 +23,7 @@ And we want to login to some service. All you have to do is remember few words f
 
 Make sure you have few backup's of your dictionary.
 
-## How to generate the dictionary
+## How to generate the dictionary?
 
 Prepare the huge file with random words, then run:
 
@@ -34,7 +34,7 @@ Prepare the huge file with random words, then run:
 Then you will see the output file with pair of five log passphrase and word
 
 
-## How to generate the dicionary with numbers
+## How to generate the dicionary with numbers?
 
 ```
 ./pass-dict --words=words.txt --characters=5 --numbers-only

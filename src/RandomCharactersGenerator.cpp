@@ -30,18 +30,21 @@ RandomCharactersGenerator::RandomCharactersGenerator(const std::string wordsPath
 
 void RandomCharactersGenerator::generate()
 {
-  std::string word;
-
   if(mWords)
   {
+    std::string word;
+    std::cout << "Generating passphrase..." << std::endl;
+
     while(std::getline(mWords, word))
     {
       mPass << getRandomString() << " " << word << std::endl;
     }
+    std::cout << "Generating passphrase done" << std::endl;
   }
   else
   {
     std::cerr << "Error open file" << std::endl;
+    throw;
   }
 }
 

@@ -27,11 +27,17 @@ class OptionParser
     const std::string characters {"characters"};
   } mParams;
 
-public:
-
   OptionParser(const int argc, char** argv);
 
   int run();
+
+public:
+
+  static int generateRandom(const int argc, char** argv)
+  {
+    OptionParser parser{argc, argv};
+    return parser.run();
+  }
 
 };
 

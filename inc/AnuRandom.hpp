@@ -107,7 +107,6 @@ public:
 	std::vector<char> deserialize(boost::property_tree::ptree& ptree)
 	{
 	  const std::string type = ptree.get<std::string>("type");
-	  //const size_t len = ptree.get<std::size_t>("length");
 	  const std::string status = ptree.get<std::string>("success");
 
 	  if(status == "false")

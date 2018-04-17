@@ -67,17 +67,19 @@ int OptionParser::run()
 
   std::unique_ptr<PassphraseGenerator> passGenerator;
 
-//  if(mVariableMap.count(mParams.numbersOnly))
-//  {
-//    passGenerator = std::make_unique<NumberGenerator>(words, "pass.txt", characters);
-//  }
-//
-//  else
-//  {
-//    passGenerator = std::make_unique<RandomCharactersGenerator>(words, "pass.txt", characters);
-//  }
+  const std::string passPath {"pass.txt"};
 
-  passGenerator = std::make_unique<RandomCharactersGenerator>(words, "pass.txt", characters);
+  if(mVariableMap.count(mParams.numbersOnly))
+  {
+    std::cout << "number only" << std::endl;
+    passGenerator = std::make_unique<NumberGenerator>(words, passPath, characters);
+  }
+
+  else
+  {
+    std::cout << "random char only" << std::endl;
+    passGenerator = std::make_unique<RandomCharactersGenerator>(words, passPath, characters);
+  }
 
   passGenerator->generate();
 

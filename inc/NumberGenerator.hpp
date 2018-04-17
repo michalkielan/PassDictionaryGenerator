@@ -12,23 +12,22 @@
 
 #include "PassphraseGenerator.hpp"
 
+#include <fstream>
+
 class NumberGenerator: public PassphraseGenerator
 {
+  std::ifstream mWords;
+  std::ofstream mPass;
+  std::size_t mLen;
+
+  size_t getLines();
+
 public:
-  NumberGenerator(const std::string wordsPath, const std::string passPath, std::size_t characters)
-  {
+  NumberGenerator(const std::string wordsPath, const std::string passPath, std::size_t characters);
 
-  }
+  void generate() override;
 
-  void generate() override
-  {
-
-  }
-
-  virtual ~NumberGenerator()
-  {
-
-  }
+  virtual ~NumberGenerator();
 };
 
 #endif /* INC_NUMBERGENERATOR_HPP_ */

@@ -14,7 +14,16 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <string>
-#include <limits>
+#include <cassert>
+
+
+const std::vector<unsigned char> randomCharacters
+{
+  '0','1','2','3','4','5','6','7','8','9',
+  'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+  'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+  '!','@','#','$','%','^','&','*','(',')','-','+','_','=','?'
+};
 
 template<typename T>
 class AnuRandom : public RandomEngine<T>
@@ -104,6 +113,14 @@ public:
 	  return ss;
 	}
 
+	unsigned char toIndex(unsigned char value) const
+	{
+    const unsigned char min = 0;
+    assert(randomCharacters.size() < 0xFF);
+    const unsigned char max = randomCharacters.size()-1;
+    return value % (max + 1 - min) + min;
+	}
+
 	std::vector<char> deserialize(boost::property_tree::ptree& ptree)
 	{
 	  const std::string type = ptree.get<std::string>("type");
@@ -121,20 +138,8 @@ public:
 
     for (const auto& actual : data)
     {
-      const unsigned int characters{26};
-      const auto toAscii = [&]()
-      {
-        long val;
-        do
-        {
-          val = actual.second.get_value<unsigned int>();
-        }
-
-        while (val >= (std::numeric_limits<int>::max()/characters)*characters);
-        return (unsigned)(val % characters);
-      };
-
-      v.push_back(toAscii());
+      const int i = toIndex(actual.second.get_value<unsigned char>());
+      v.push_back(randomCharacters[i] - '0');
     }
     return v;
   }

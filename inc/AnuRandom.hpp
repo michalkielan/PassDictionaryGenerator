@@ -119,11 +119,11 @@ public:
 
 	  const auto data = ptree.get_child("data");
 
-	  for(const auto& actual : data)
-	  {
-	    const unsigned int characters {26};
-	    const auto toAscii = [&]()
-	    {
+    for (const auto& actual : data)
+    {
+      const unsigned int characters{26};
+      const auto toAscii = [&]()
+      {
         long val;
         do
         {
@@ -132,12 +132,12 @@ public:
 
         while (val >= (std::numeric_limits<int>::max()/characters)*characters);
         return (unsigned)(val % characters);
-	    };
+      };
 
-	    v.push_back(toAscii());
-	  }
-	  return v;
-	}
+      v.push_back(toAscii());
+    }
+    return v;
+  }
 
 
 	std::vector<T> getRandom() override

@@ -7,4 +7,10 @@
 
 #include "RandomEngine.hpp"
 
-
+unsigned char getCharacter(unsigned char value)
+{
+  const unsigned char min = 0;
+  assert(randomCharacters.size() < 0xFF);
+  const unsigned char max = randomCharacters.size()-1;
+  return value % (max + 1 - min) + min;
+}

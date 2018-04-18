@@ -9,21 +9,13 @@
 #define ANURANDOM_HPP_
 
 #include "RandomEngine.hpp"
+#include "HttpClient.hpp"
 
-#include <boost/asio.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <string>
 #include <cassert>
 
-
-const std::vector<unsigned char> randomCharacters
-{
-  '0','1','2','3','4','5','6','7','8','9',
-  'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
-  'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
-  '!','@','#','$','%','^','&','*','(',')','-','+','_','=','?'
-};
 
 template<typename T>
 class AnuRandom : public RandomEngine<T>
@@ -43,84 +35,6 @@ public:
 	  mUrl = "/API/jsonI.php?length=" + std::to_string(mBytes) + "&type=" + format;
 	}
 
-	std::stringstream download(const std::string serverName, const std::string getCommand)
-	{
-	  using namespace boost::asio;
-
-	  boost::asio::io_service io_service;
-
-	// Get a list of endpoints corresponding to the server name.
-	  ip::tcp::resolver resolver(io_service);
-	  ip::tcp::resolver::query query(serverName, "http");
-	  ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-	  ip::tcp::resolver::iterator end;
-
-	// Try each endpoint until we successfully establish a connection.
-	  ip::tcp::socket socket(io_service);
-	  boost::system::error_code error = boost::asio::error::host_not_found;
-
-	  while(error && endpoint_iterator != end)
-	  {
-	    socket.close();
-	    socket.connect(*endpoint_iterator, error);
-	  }
-
-	  boost::asio::streambuf request;
-	  std::ostream request_stream(&request);
-
-	  request_stream << "GET " << getCommand << " HTTP/1.0\r\n";
-	  request_stream << "Host: " << serverName << "\r\n";
-	  request_stream << "Accept: */*\r\n";
-	  request_stream << "Connection: close\r\n\r\n";
-
-	  // Send the request.
-	  boost::asio::write(socket, request);
-
-	  // Read the response status line.
-	  boost::asio::streambuf response;
-	  boost::asio::read_until(socket, response, "\r\n");
-
-	  // Check that response is OK.
-	  std::istream response_stream(&response);
-	  std::string http_version;
-	  response_stream >> http_version;
-	  unsigned int status_code;
-	  response_stream >> status_code;
-	  std::string status_message;
-	  std::getline(response_stream, status_message);
-
-	  // Read the response headers, which are terminated by a blank line.
-	  boost::asio::read_until(socket, response, "\r\n\r\n");
-
-	  // Process the response headers.
-	  std::string header;
-	  while (std::getline(response_stream, header) && header != "\r");
-
-	  std::stringstream ss;
-
-	  // Write whatever content we already have to output.
-	  if (response.size() > 0)
-	  {
-	    ss << &response;
-	  }
-
-	  // Read until EOF, writing data to output as we go.
-	  while (boost::asio::read(socket, response, boost::asio::transfer_at_least(1), error))
-	  {
-	    ss << &response;
-	  }
-
-	  return ss;
-	}
-
-	unsigned char toIndex(unsigned char value) const
-	{
-    const unsigned char min = 0;
-    assert(randomCharacters.size() < 0xFF);
-    const unsigned char max = randomCharacters.size()-1;
-    return value % (max + 1 - min) + min;
-	}
-
 	std::vector<char> deserialize(boost::property_tree::ptree& ptree)
 	{
 	  const std::string type = ptree.get<std::string>("type");
@@ -138,8 +52,8 @@ public:
 
     for (const auto& actual : data)
     {
-      const int i = toIndex(actual.second.get_value<unsigned char>());
-      v.push_back(randomCharacters[i] - '0');
+      const int i = getCharacter(actual.second.get_value<unsigned char>());
+      v.push_back(randomCharacters[i]);
     }
     return v;
   }
@@ -147,9 +61,8 @@ public:
 
 	std::vector<T> getRandom() override
 	{
-	  const std::string server{ "qrng.anu.edu.au" };
-
-	  auto ss = download(server, mUrl);
+	  HttpClient anuServer {"qrng.anu.edu.au"};
+	  auto ss = anuServer.download(mUrl);
 
 	  boost::property_tree::ptree ptree;
 	  boost::property_tree::read_json(ss, ptree);
@@ -163,7 +76,7 @@ public:
 
 	  for(std::size_t i=0; i<bytes.size(); i++)
 	  {
-	    *v_p++ = bytes[i] + '0';
+	    *v_p++ = bytes[i];
 	  }
 
 	  return v;

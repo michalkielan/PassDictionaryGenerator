@@ -71,13 +71,11 @@ int OptionParser::run()
 
   if(mVariableMap.count(mParams.numbersOnly))
   {
-    std::cout << "number only" << std::endl;
     passGenerator = std::make_unique<NumberGenerator>(words, passPath, characters);
   }
 
   else
   {
-    std::cout << "random char only" << std::endl;
     passGenerator = std::make_unique<RandomCharactersGenerator>(words, passPath, characters);
   }
 

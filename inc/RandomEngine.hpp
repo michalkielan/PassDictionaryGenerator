@@ -47,7 +47,9 @@ public:
   /**
    * @brief Constructor
    */
-	RandomEngine();
+	RandomEngine()
+  {
+  }
 
 	/**
 	 * @brief Get vector of random data

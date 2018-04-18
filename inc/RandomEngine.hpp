@@ -12,6 +12,10 @@
 #include <vector>
 #include <cassert>
 
+
+/**
+ * @brief Array of random characters
+ */
 constexpr const std::array<unsigned char, 77> randomCharacters
 {
   '0','1','2','3','4','5','6','7','8','9',
@@ -21,19 +25,38 @@ constexpr const std::array<unsigned char, 77> randomCharacters
 };
 
 
-unsigned char getCharacter(unsigned char value);
+/**
+ * @brief Get index from random value
+ *
+ * @param [in] random index
+ *
+ * @return Index of 'randomCharacters' array
+ */
+unsigned char getCharacterIndex(unsigned char value);
 
+
+/**
+ * @brief Random Engine inteface
+ */
 template<typename T>
 class RandomEngine
 {
 
 public:
-	RandomEngine()
-  {
-  }
 
+  /**
+   * @brief Constructor
+   */
+	RandomEngine();
+
+	/**
+	 * @brief Get vector of random data
+	 */
 	virtual std::vector<T> getRandom() = 0;
 
+	/**
+	 * @brief Destructor
+	 */
 	virtual ~RandomEngine() = default;
 };
 

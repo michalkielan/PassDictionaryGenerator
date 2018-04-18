@@ -7,7 +7,8 @@
 
 #include "RandomEngine.hpp"
 
-unsigned char getCharacter(unsigned char value)
+
+unsigned char getCharacterIndex(unsigned char value)
 {
   const unsigned char min = 0;
   assert(randomCharacters.size() < 0xFF);

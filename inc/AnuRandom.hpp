@@ -1,8 +1,10 @@
-/*
- * AnuRandom.hpp
+/**
+ * @file AnuRandom.hpp
  *
- *  Created on: Apr 6, 2018
- *      Author: Michal Kielan
+ * @brief
+ *
+ * @date Apr 6, 2018
+ * @author Michal Kielan
  */
 
 #ifndef ANURANDOM_HPP_
@@ -13,10 +15,14 @@
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+
 #include <string>
 #include <cassert>
 
 
+/**
+ * @brief Download data from anu quantom number generator https://qrng.anu.edu.au
+ */
 template<typename T>
 class AnuRandom : public RandomEngine<T>
 {
@@ -24,7 +30,39 @@ class AnuRandom : public RandomEngine<T>
 	std::size_t mBytes;
 	std::string mUrl;
 
+  /**
+   * @brief Deserialize json with data
+   *
+   * @return vector of random characters
+   */
+  std::vector<char> deserialize(boost::property_tree::ptree& ptree)
+  {
+    const std::string type = ptree.get<std::string>("type");
+    const std::string status = ptree.get<std::string>("success");
+
+    if(status == "false")
+    {
+      throw;
+    }
+
+    std::vector<char> v;
+    v.reserve(mBytes);
+
+    const auto data = ptree.get_child("data");
+
+    for(const auto& actual : data)
+    {
+      const int i = getCharacterIndex(actual.second.get_value<unsigned char>());
+      v.push_back(randomCharacters[i]);
+    }
+    return v;
+  }
+
 public:
+
+  /**
+   * @brief Constructor
+   */
 	AnuRandom(const std::size_t len) :
 	  mLen{len},
 	  mBytes{len},
@@ -35,30 +73,11 @@ public:
 	  mUrl = "/API/jsonI.php?length=" + std::to_string(mBytes) + "&type=" + format;
 	}
 
-	std::vector<char> deserialize(boost::property_tree::ptree& ptree)
-	{
-	  const std::string type = ptree.get<std::string>("type");
-	  const std::string status = ptree.get<std::string>("success");
-
-	  if(status == "false")
-	  {
-	    throw;
-	  }
-
-	  std::vector<char> v;
-	  v.reserve(mBytes);
-
-	  const auto data = ptree.get_child("data");
-
-    for (const auto& actual : data)
-    {
-      const int i = getCharacter(actual.second.get_value<unsigned char>());
-      v.push_back(randomCharacters[i]);
-    }
-    return v;
-  }
-
-
+  /**
+   * @brief Get random vector
+   *
+   * @return vector of random data
+   */
 	std::vector<T> getRandom() override
 	{
 	  HttpClient anuServer {"qrng.anu.edu.au"};
@@ -82,11 +101,11 @@ public:
 	  return v;
 	}
 
+  /**
+   * @brief Destructor
+   */
+	virtual ~AnuRandom() = default;
 
-	virtual ~AnuRandom()
-	{
-
-	}
 };
 
 #endif /* ANURANDOM_HPP_ */

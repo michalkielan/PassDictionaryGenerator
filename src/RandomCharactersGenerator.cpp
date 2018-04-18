@@ -10,14 +10,10 @@
 #include "RandomCharactersGenerator.hpp"
 
 #include "AnuRandom.hpp"
+#include "SafeQueue.hpp"
+#include "DownloadPool.hpp"
 
 #include <iostream>
-
-#include <future>
-#include <queue>
-#include <mutex>
-#include <atomic>
-#include <stack>
 #include <chrono>
 
 std::string RandomCharactersGenerator::getRandomString() const
@@ -35,97 +31,6 @@ RandomCharactersGenerator::RandomCharactersGenerator(const std::string wordsPath
 {
 }
 
-template<typename T>
-class ThreadQueue
-{
-  std::condition_variable mCv;
-  std::mutex              mMutex;
-  std::queue<T>           mData;
-
-public:
-
-  ThreadQueue()
-  {
-
-  }
-
-  ThreadQueue(const ThreadQueue& other) = delete;
-  ThreadQueue(ThreadQueue&& other) :
-    mCv{std::move(other.mCv)},
-    mMutex{std::move(other.mMutex)},
-    mData{std::move(other.mData)}
-  {
-
-  }
-
-  void push(const T item)
-  {
-    std::unique_lock<std::mutex> lk{mMutex};
-    mData.push(item);
-
-    lk.unlock();
-    mCv.notify_all();
-  }
-
-  T pop()
-  {
-    std::unique_lock<std::mutex> lk{mMutex};
-    while(mData.empty())
-    {
-      mCv.wait(lk);
-    }
-
-    const T tmp = mData.front();
-    mData.pop();
-    return tmp;
-  }
-
-  ~ThreadQueue() = default;
-};
-
-
-class DownloadPool
-{
-  std::vector<std::thread> mDownloaders;
-  std::size_t              mThreads;
-  std::atomic_bool         mIsDone;
-public:
-
-  DownloadPool(const std::size_t threads) :
-    mThreads{threads},
-    mIsDone{false}
-  {
-    mDownloaders.reserve(mThreads);
-  }
-
-  template<typename Function, class... Args>
-  void start(Function&& function, Args&&... args)
-  {
-    for(std::size_t i=0; i< mThreads; i++)
-    {
-      mDownloaders.emplace_back([&]()
-      {
-        while(!mIsDone.load())
-        {
-          function(args...);
-        }
-      });
-    }
-  }
-
-  void stop()
-  {
-    mIsDone.store(true);
-  }
-
-  ~DownloadPool()
-  {
-    for(auto& downloader : mDownloaders)
-    {
-      downloader.detach();
-    }
-  }
-};
 
 void RandomCharactersGenerator::generate()
 {
@@ -134,7 +39,7 @@ void RandomCharactersGenerator::generate()
     std::cout << "Generating passphrase..." << std::endl;
 
     constexpr const std::size_t downloadThreads{100};
-    ThreadQueue<std::string> passphrases{};
+    SafeQueue<std::string> passphrases{};
     DownloadPool downloaderPool{downloadThreads};
 
     const auto pushRandom = [&]()

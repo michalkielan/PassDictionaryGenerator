@@ -10,12 +10,13 @@
 #include "NumberGenerator.hpp"
 
 #include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <cassert>
 
-
-NumberGenerator::NumberGenerator(const std::string wordsPath, const std::string passPath, std::size_t characters) :
+NumberGenerator::NumberGenerator(const std::string wordsPath, const std::string passPath) :
   mWords{wordsPath, std::ios::in},
-  mPass{passPath, std::ios::out},
-  mLen{characters}
+  mPass{passPath, std::ios::out}
 {
 
 }
@@ -31,21 +32,49 @@ size_t NumberGenerator::getLines()
   return lines;
 }
 
+template<typename T>
+static inline unsigned int getDigits(T number)
+{
+  unsigned int digits{};
+  assert(number >= 0);
+  while(number)
+  {
+    number /= 10;
+    digits++;
+  }
+  return digits;
+}
+
+template<typename T>
+static std::string toString(const T number, const int digits)
+{
+  std::stringstream ss;
+  ss << std::setw(digits) << std::setfill('0') << number;
+  return ss.str();
+}
+
+
 void NumberGenerator::generate()
 {
   if(mWords)
   {
     std::string word;
-//    const auto lines = getLines();
-//    const auto digits {mLen};
-//    const auto maxNumber = (lines < digits) ? lines : digits;
-//
-//    std::cout << "Generating passphrase..." << std::endl;
-    size_t counter {};
+    const auto lines = getLines();
 
+    constexpr const size_t startNum {11111};
+
+    const auto maxNum = lines + startNum;
+    const auto digits = getDigits(maxNum);
+
+    size_t counter{startNum};
+
+    mWords.clear();
+    mWords.seekg(0, std::ios::beg);
+
+    std::cout << "Generating passphrase..." << std::endl;
     while(std::getline(mWords, word))
     {
-      mPass << std::to_string(counter++) << " " << word << std::endl;
+      mPass << toString(counter++, digits) << " " << word << std::endl;
     }
     std::cout << "Generating passphrase done" << std::endl;
   }

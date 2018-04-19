@@ -22,7 +22,6 @@ class NumberGenerator: public PassphraseGenerator
 {
   std::ifstream mWords;
   std::ofstream mPass;
-  std::size_t mLen;
 
   /**
    * @brief get number of lines
@@ -40,7 +39,7 @@ public:
    * @param [in] path for file with passphrases and words
    * @param [in] number of passphrase characters
    */
-  NumberGenerator(const std::string wordsPath, const std::string passPath, std::size_t characters);
+  NumberGenerator(const std::string wordsPath, const std::string passPath);
 
   /**
    * @brief Override

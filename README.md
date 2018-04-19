@@ -37,21 +37,9 @@ Then you will see the output file with pair of five long passphrase and word
 ## Building
 
 Boost library is needed
-
-
-## How to generate the dicionary with numbers?
-
 ```
-./pass-dict --words=words.txt --characters=5 --numbers-only
+$make
 ```
 
-Then you will see the output file with pair of five digits number and word
-
-```
-00000 word1
-00001 word2
-...
-99999 word3
-```
 
 

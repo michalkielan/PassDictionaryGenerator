@@ -34,17 +34,17 @@ void HttpClient::tryEndpoints()
 
 std::stringstream HttpClient::createResponse(ba::streambuf& response)
 {
-  std::stringstream responseData;
+  std::stringstream msg;
 
   if(response.size() > 0)
   {
-    responseData << &response;
+    msg << &response;
   }
 
   boost::system::error_code error = boost::asio::error::host_not_found;
   while(ba::read(mSocket, response, ba::transfer_at_least(1), error))
   {
-    responseData << &response;
+    msg << &response;
   }
 
   if(mSocket.is_open())
@@ -52,15 +52,15 @@ std::stringstream HttpClient::createResponse(ba::streambuf& response)
     mSocket.close();
   }
 
-  return responseData;
+  return msg;
 }
 
-void HttpClient::readResponseHeaders(std::istream& responseStream, ba::streambuf& response)
+void HttpClient::readResponseHeaders(std::istream& msg, ba::streambuf& response)
 {
   ba::read_until(mSocket, response, "\r\n\r\n");
 
   std::string header;
-  while(std::getline(responseStream, header) && header != "\r");
+  while(std::getline(msg, header) && header != "\r");
 }
 
 std::stringstream HttpClient::readResponse()
@@ -68,16 +68,16 @@ std::stringstream HttpClient::readResponse()
   ba::streambuf response;
   ba::read_until(mSocket, response, "\r\n");
 
-  std::istream responseStream{&response};
+  std::istream msg{&response};
   std::string httpVersion{};
 
-  responseStream >> httpVersion;
+  msg >> httpVersion;
   unsigned int statusCode;
-  responseStream >> statusCode;
+  msg >> statusCode;
   std::string statusMessage;
-  std::getline(responseStream, statusMessage);
+  std::getline(msg, statusMessage);
 
-  readResponseHeaders(responseStream, response);
+  readResponseHeaders(msg, response);
 
   return createResponse(response);
 }
@@ -87,12 +87,12 @@ void HttpClient::sendRequest(const std::string& serverPath)
   tryEndpoints();
 
   boost::asio::streambuf request{};
-  std::ostream requestStream{&request};
+  std::ostream msg{&request};
 
-  requestStream << "GET " << serverPath << " HTTP/1.0\r\n";
-  requestStream << "Host: " << mServer << "\r\n";
-  requestStream << "Accept: */*\r\n";
-  requestStream << "Connection: close\r\n\r\n";
+  msg << "GET " << serverPath << " HTTP/1.0\r\n";
+  msg << "Host: " << mServer << "\r\n";
+  msg << "Accept: */*\r\n";
+  msg << "Connection: close\r\n\r\n";
 
   ba::write(mSocket, request);
 }

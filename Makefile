@@ -41,9 +41,12 @@ INC_PATH=inc/
 if[${CXX?}=""]; then CXX=$(COMPILER); fi;
 
 CFLAGS+= -$(CPP_STD) 
-CFLAGS+= -Wall 
 CFLAGS+= $(DBG) 
 CFLAGS+= $(OPTIMIZATION)
+CFLAGS+= -Wall 
+CFLAGS+= -Wextra
+CFLAGS+= -pedantic
+CFLAGS+= -Wshadow
 
 LDFLAGS+=$(BOOST)
 LDFLAGS+=-lpthread

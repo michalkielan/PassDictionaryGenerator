@@ -43,17 +43,6 @@ int OptionParser::run()
   }
 
   std::string words{};
-  int characters{};
-
-  try
-  {
-    characters = mVariableMap[mParams.characters].as<int>();
-  }
-  catch(...)
-  {
-    std::cout << "Error \'characters\' parameter" << std::endl;
-    return -1;
-  }
 
   try
   {
@@ -71,11 +60,21 @@ int OptionParser::run()
 
   if(mVariableMap.count(mParams.numbersOnly))
   {
-    passGenerator = std::make_unique<NumberGenerator>(words, passPath, characters);
+    passGenerator = std::make_unique<NumberGenerator>(words, passPath);
   }
 
   else
   {
+    int characters{};
+    try
+    {
+      characters = mVariableMap[mParams.characters].as<int>();
+    }
+    catch(...)
+    {
+      std::cout << "Error \'characters\' parameter" << std::endl;
+      return -1;
+    }
     passGenerator = std::make_unique<RandomCharactersGenerator>(words, passPath, characters);
   }
 

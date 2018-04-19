@@ -12,11 +12,11 @@
 
 HttpClient::HttpClient(const std::string server) :
   mServer{std::move(server)},
-  mIoService{},
-  mResolver{mIoService},
+  mIoContext{},
+  mResolver{mIoContext},
   mQuery{mServer, "http"},
   mEndpointIterator{mResolver.resolve(mQuery)},
-  mSocket{mIoService}
+  mSocket{mIoContext}
 {
 }
 

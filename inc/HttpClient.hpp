@@ -20,7 +20,7 @@ namespace ba = boost::asio;
 class HttpClient
 {
   std::string                     mServer;
-  ba::io_service                  mIoService;
+  ba::io_context                  mIoContext;
   ba::ip::tcp::resolver           mResolver;
   ba::ip::tcp::resolver::query    mQuery;
   ba::ip::tcp::resolver::iterator mEndpointIterator;

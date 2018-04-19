@@ -4,7 +4,7 @@ language: cpp
 sudo: required
 
 script:
-  - CC=gcc-7 CXX=c++-7 make
+  - CC=gcc-7 CXX=g++-7 make
 
 addons:
   apt:

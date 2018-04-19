@@ -10,82 +10,104 @@
 #include "HttpClient.hpp"
 
 
-HttpClient::HttpClient(std::string server) :
+HttpClient::HttpClient(const std::string server) :
   mServer{std::move(server)},
-  mIoService{}
+  mIoService{},
+  mResolver{mIoService},
+  mQuery{mServer, "http"},
+  mEndpointIterator{mResolver.resolve(mQuery)},
+  mSocket{mIoService}
 {
-
 }
 
-
-std::stringstream HttpClient::download(const std::string getCommand)
+void HttpClient::tryEndpoints()
 {
-// Get a list of endpoints corresponding to the server name.
-  ba::ip::tcp::resolver resolver(mIoService);
-  ba::ip::tcp::resolver::query query(mServer, "http");
-  ba::ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
   ba::ip::tcp::resolver::iterator end;
-
-// Try each endpoint until we successfully establish a connection.
-  ba::ip::tcp::socket socket(mIoService);
   boost::system::error_code error = boost::asio::error::host_not_found;
 
-  while(error && endpoint_iterator != end)
+  while(error && mEndpointIterator != end)
   {
-    socket.close();
-    socket.connect(*endpoint_iterator, error);
+    mSocket.close();
+    mSocket.connect(*mEndpointIterator, error);
+  }
+}
+
+std::stringstream HttpClient::createResponse(ba::streambuf& response)
+{
+  std::stringstream responseData;
+
+  if(response.size() > 0)
+  {
+    responseData << &response;
   }
 
-  boost::asio::streambuf request;
-  std::ostream request_stream(&request);
+  boost::system::error_code error = boost::asio::error::host_not_found;
+  while(ba::read(mSocket, response, ba::transfer_at_least(1), error))
+  {
+    responseData << &response;
+  }
 
-  request_stream << "GET " << getCommand << " HTTP/1.0\r\n";
-  request_stream << "Host: " << mServer << "\r\n";
-  request_stream << "Accept: */*\r\n";
-  request_stream << "Connection: close\r\n\r\n";
+  if(mSocket.is_open())
+  {
+    mSocket.close();
+  }
 
-  // Send the request.
-  ba::write(socket, request);
+  return responseData;
+}
 
-  // Read the response status line.
-  ba::streambuf response;
-  ba::read_until(socket, response, "\r\n");
+void HttpClient::readResponseHeaders(std::istream& responseStream, ba::streambuf& response)
+{
+  ba::read_until(mSocket, response, "\r\n\r\n");
 
-  // Check that response is OK.
-  std::istream response_stream(&response);
-  std::string http_version;
-  response_stream >> http_version;
-  unsigned int status_code;
-  response_stream >> status_code;
-  std::string status_message;
-  std::getline(response_stream, status_message);
-
-  // Read the response headers, which are terminated by a blank line.
-  ba::read_until(socket, response, "\r\n\r\n");
-
-  // Process the response headers.
   std::string header;
-  while (std::getline(response_stream, header) && header != "\r");
+  while(std::getline(responseStream, header) && header != "\r");
+}
 
-  std::stringstream ss;
+std::stringstream HttpClient::readResponse()
+{
+  ba::streambuf response;
+  ba::read_until(mSocket, response, "\r\n");
 
-  // Write whatever content we already have to output.
-  if (response.size() > 0)
+  std::istream responseStream{&response};
+  std::string httpVersion{};
+
+  responseStream >> httpVersion;
+  unsigned int statusCode;
+  responseStream >> statusCode;
+  std::string statusMessage;
+  std::getline(responseStream, statusMessage);
+
+  readResponseHeaders(responseStream, response);
+
+  return createResponse(response);
+}
+
+void HttpClient::sendRequest(const std::string& serverPath)
+{
+  tryEndpoints();
+
+  boost::asio::streambuf request{};
+  std::ostream requestStream{&request};
+
+  requestStream << "GET " << serverPath << " HTTP/1.0\r\n";
+  requestStream << "Host: " << mServer << "\r\n";
+  requestStream << "Accept: */*\r\n";
+  requestStream << "Connection: close\r\n\r\n";
+
+  ba::write(mSocket, request);
+}
+
+std::stringstream HttpClient::download(const std::string serverPath)
+{
+  sendRequest(serverPath);
+  return readResponse();
+ }
+
+HttpClient::~HttpClient()
+{
+  if(mSocket.is_open())
   {
-    ss << &response;
+    mSocket.close();
   }
-
-  // Read until EOF, writing data to output as we go.
-  while (ba::read(socket, response, ba::transfer_at_least(1), error))
-  {
-    ss << &response;
-  }
-
-  if(socket.is_open())
-  {
-    socket.close();
-  }
-
-  return ss;
 }
 

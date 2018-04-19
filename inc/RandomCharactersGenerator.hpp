@@ -26,7 +26,6 @@ class RandomCharactersGenerator : public PassphraseGenerator
 {
   std::ifstream mWords;
   std::ofstream mPass;
-  std::size_t mLen;
   std::shared_ptr<RandomEngine<char>> mRandomEngine;
 
   /**

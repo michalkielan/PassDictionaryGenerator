@@ -26,7 +26,6 @@ std::string RandomCharactersGenerator::getRandomString() const
 RandomCharactersGenerator::RandomCharactersGenerator(const std::string wordsPath, const std::string passPath, std::size_t characters) :
   mWords{wordsPath, std::ios::in},
   mPass{passPath, std::ios::out},
-  mLen{characters},
   mRandomEngine{std::make_shared<AnuRandom<char>>(characters)}
 {
 }

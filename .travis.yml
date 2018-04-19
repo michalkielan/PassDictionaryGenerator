@@ -1,0 +1,17 @@
+dist: trusty
+os: linux
+language: cpp
+sudo: required
+
+script:
+  - make
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - autotools-dev
+      - gcc-7
+      - g++-7
+      - libboost-all-dev 

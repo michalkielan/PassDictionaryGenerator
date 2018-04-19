@@ -1,8 +1,10 @@
-/*
- * AnuRandom.cpp
+/**
+ * @file AnuRandom.cpp
  *
- *  Created on: Apr 6, 2018
- *      Author: Michal Kielan
+ * @brief
+ *
+ * @date Apr 6, 2018
+ * @author Michal Kielan
  */
 
 #include "AnuRandom.hpp"

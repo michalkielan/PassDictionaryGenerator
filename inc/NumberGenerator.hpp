@@ -1,7 +1,7 @@
 /**
  * @file NumberGenerator.hpp
  *
- * @brief
+ * @brief Generate number passphrase
  *
  * @date Apr 17, 2018
  * @author Michal Kielan
@@ -14,19 +14,42 @@
 
 #include <fstream>
 
+
+/**
+ * @brief Number passphrase generator
+ */
 class NumberGenerator: public PassphraseGenerator
 {
   std::ifstream mWords;
   std::ofstream mPass;
   std::size_t mLen;
 
+  /**
+   * @brief get number of lines
+   *
+   * @return number of lines
+   */
   size_t getLines();
 
 public:
+
+  /**
+   * @brief Constructor
+   *
+   * @param [in] path for file with words
+   * @param [in] path for file with passphrases and words
+   * @param [in] number of passphrase characters
+   */
   NumberGenerator(const std::string wordsPath, const std::string passPath, std::size_t characters);
 
+  /**
+   * @brief Override
+   */
   void generate() override;
 
+  /**
+   * @brief Destructor
+   */
   virtual ~NumberGenerator();
 };
 

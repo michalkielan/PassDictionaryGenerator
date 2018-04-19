@@ -1,8 +1,10 @@
-/*
- * RandomEngine.hpp
+/**
+ * @file RandomEngine.hpp
  *
- *  Created on: Apr 6, 2018
- *      Author: Michal Kielan
+ * @brief Random engine interface
+ *
+ * @date Apr 6, 2018
+ * @author Michal Kielan
  */
 
 #ifndef RANDOMENGINE_HPP_
@@ -10,7 +12,6 @@
 
 #include <array>
 #include <vector>
-#include <cassert>
 
 
 /**

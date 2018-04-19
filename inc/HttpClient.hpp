@@ -1,7 +1,7 @@
 /**
  * @file HttpClient.hpp
  *
- * @brief
+ * @brief Http client
  *
  * @date Apr 17, 2018
  * @author Michal Kielan
@@ -16,15 +16,29 @@
 
 namespace ba = boost::asio;
 
+/**
+ * @brief Http client to download data
+ */
 class HttpClient
 {
-  std::string mServer;
+  std::string    mServer;
   ba::io_service mIoService;
 
 public:
 
+  /**
+   * @brief Constructor
+   *
+   * @param [in] server name/ip
+   */
   HttpClient(std::string server);
 
+  /**
+   * @brief Download data
+   *
+   * @param [in] server path
+   * @return downloaded data
+   */
   std::stringstream download(const std::string getCommand);
 
 };

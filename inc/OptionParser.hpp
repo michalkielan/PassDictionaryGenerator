@@ -23,7 +23,6 @@ class OptionParser
   {
     const std::string help {"help"};
     const std::string words {"words"};
-    const std::string numbersOnly {"numbers-only"};
     const std::string characters {"characters"};
   } mParams;
 

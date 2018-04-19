@@ -10,7 +10,6 @@
 #include "OptionParser.hpp"
 
 #include "RandomCharactersGenerator.hpp"
-#include "NumberGenerator.hpp"
 
 #include <iostream>
 
@@ -22,7 +21,6 @@ OptionParser::OptionParser(const int argc, char** argv) :
   mDescription.add_options()
     (mParams.help.c_str(),                                   "Print help messages")
     (mParams.words.c_str(),        po::value<std::string>(), "Input file with random words")
-    (mParams.numbersOnly.c_str(),                            "Passwords is only numbers, sorted from 0 to N")
     (mParams.characters.c_str(),   po::value<int>(),         "Number of characters in passwords");
 
   try
@@ -69,16 +67,7 @@ int OptionParser::run()
 
   const std::string passPath {"pass.txt"};
 
-  if(mVariableMap.count(mParams.numbersOnly))
-  {
-    passGenerator = std::make_unique<NumberGenerator>(words, passPath, characters);
-  }
-
-  else
-  {
-    passGenerator = std::make_unique<RandomCharactersGenerator>(words, passPath, characters);
-  }
-
+  passGenerator = std::make_unique<RandomCharactersGenerator>(words, passPath, characters);
   passGenerator->generate();
 
   po::notify(mVariableMap);

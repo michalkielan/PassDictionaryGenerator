@@ -101,7 +101,7 @@ std::stringstream HttpClient::download(const std::string serverPath)
 {
   sendRequest(serverPath);
   return readResponse();
- }
+}
 
 HttpClient::~HttpClient()
 {

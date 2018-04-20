@@ -1,3 +1,5 @@
+[![Travis CI](https://travis-ci.org/michalkielan/PassDictionary.svg?branch=master)](https://travis-ci.com/michalkielan/PassDictionary) |
+
 # Passwords Dictionary Generator
 
 This application is for generating the dictionary of pair passphrase and word. Each N characters passphrase is connected to one random word from the input file. 

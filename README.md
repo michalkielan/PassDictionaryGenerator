@@ -26,7 +26,18 @@ Make sure you have few backup's of your dictionary.
 
 ## How to generate the dictionary?
 
-Prepare the huge file with random words, then run:
+Prepare the huge file with random words:
+```
+acid
+cat
+hammer
+Tom
+alien
+Roger
+...
+```
+
+Then run:
 
 ```
 ./pass-dict --words=words.txt --characters=5
@@ -39,7 +50,7 @@ Then you will see the output file with pair of five long passphrase and word
 
 Boost library is needed
 ```
-$make
+$ make
 ```
 
 

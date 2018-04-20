@@ -31,7 +31,7 @@ public:
   /**
    * @brief Constructor
    */
-  SafeQueue()
+  constexpr explicit SafeQueue()
   {
   }
 
@@ -59,7 +59,7 @@ public:
   void push(const T item)
   {
     std::unique_lock<std::mutex> lk{mMutex};
-    mData.push(item);
+    mData.push(std::move(item));
 
     lk.unlock();
     mCv.notify_all();
@@ -67,7 +67,7 @@ public:
 
 
   /**
-   * @brief Take te top element from the queue
+   * @brief Take the top element from the queue
    *
    * @return top element of the queue
    */

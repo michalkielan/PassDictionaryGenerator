@@ -68,7 +68,17 @@ int OptionParser::run()
   const std::string passPath {"pass.txt"};
 
   passGenerator = std::make_unique<RandomCharactersGenerator>(words, passPath, characters);
-  passGenerator->generate();
+
+  try
+  {
+    passGenerator->generate();
+  }
+  catch(...)
+  {
+	  return -1;
+  }
+
+  std::cout << "Output file :" << passPath << std::endl;
 
   po::notify(mVariableMap);
 

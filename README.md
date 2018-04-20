@@ -18,7 +18,7 @@ $$fw3  Roger
 ...
 ```
 
-And we want to login to some service. All you have to do is remember few words for example: 'Tom acid cat hammer' or better create a mnemonic story with those words like: "Tom on acid riding on the cat with the hammer", then find each word in your dictionary, copy the passphrases to create your strong password like the picture below. Do it each time you want to login.
+And we want to login to some service. All you have to do is remember few words for example: '**Tom acid cat hammer**' or better create a mnemonic story with those words like: "**Tom** on **acid** riding on the **cat** with the **hammer**", then find each word in your dictionary, copy the passphrases to create your strong password like the picture below. Do it each time you want to login.
 
 ![test](../master/doc/pass.png)
 

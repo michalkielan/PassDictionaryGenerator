@@ -8,7 +8,7 @@ script:
   - sudo tar xzvf boost_1_64_0.tar.gz
   - cd boost_1_64_0/
   - sudo ./bootstrap.sh --prefix=/usr/local
-  - sudo ./bootstrap.sh --with-libraries=program_options,filesystem,system --prefix=/usr/local
+  - sudo ./bootstrap.sh --with-libraries=program_options,system --prefix=/usr/local
   - sudo ./b2 link=shared threading=multi variant=release
   - sudo ./b2 install 
   - CC=gcc-7 CXX=g++-7 make

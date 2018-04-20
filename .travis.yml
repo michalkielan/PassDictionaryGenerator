@@ -5,12 +5,13 @@ sudo: required
 
 script:
   - sudo wget -O boost_1_64_0.tar.gz http://sourceforge.net/projects/boost/files/boost/1.64.0/boost_1_64_0.tar.gz/download
-  - sudo tar xzvf boost_1_64_0.tar.gz
+  - sudo tar xzvf boost_1_64_0.tar.gz > /dev/null
   - cd boost_1_64_0/
   - sudo ./bootstrap.sh --prefix=/usr/local
   - sudo ./bootstrap.sh --with-libraries=program_options,system --prefix=/usr/local
   - sudo ./b2 link=shared threading=multi variant=release
-  - sudo ./b2 install 
+  - sudo ./b2 install
+  - cd .. 
   - CC=gcc-7 CXX=g++-7 make
 
 addons:
